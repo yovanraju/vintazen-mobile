@@ -214,3 +214,106 @@ Dalam kode ini, `final` digunakan untuk variabel seperti `npm`, `name`, dan `cla
         - "Kamu telah menekan tombol Lihat Product"
         - "Kamu telah menekan tombol Tambah Product"
         - "Kamu telah menekan tombol Logout"
+
+
+
+### Tugas 8
+
+1. Apa kegunaan const di Flutter? Jelaskan apa keuntungan ketika menggunakan const pada kode Flutter. Kapan sebaiknya kita menggunakan const, dan kapan sebaiknya tidak digunakan?
+
+    - Kegunaan const di Flutter adalah untuk membuat objek yang immutable (tidak dapat diubah) dan deeply immutable (tidak dapat diubah meskipun objek tersebut direferensikan oleh objek lain).
+    - Keuntungan menggunakan const adalah meningkatkan performa karena objek yang sudah dibuat tidak perlu dibuat lagi, dan memudahkan debugging karena nilai objek sudah diketahui pada compile time.
+    - Sebaiknya menggunakan const saat nilai objek sudah diketahui pada compile time, seperti konstanta atau nilai yang tidak berubah selama runtime.
+    - Sebaiknya tidak menggunakan const untuk objek yang nilainya tidak diketahui pada compile time, seperti nilai yang didapatkan dari API atau input pengguna.    
+
+2. Jelaskan dan bandingkan penggunaan Column dan Row pada Flutter. Berikan contoh implementasi dari masing-masing layout widget ini!
+
+    - Column: Mengatur widget secara vertikal
+    - Row: Mengatur widget secara    horizontal    
+
+    Contoh implementasi:
+
+    Column(
+        children: [
+            Text('Hello, World!'),
+        ],
+    )
+
+    Row(
+        children: [
+            Text('Hello, World!'),
+        ],
+    )
+
+3. Sebutkan apa saja elemen input yang kamu gunakan pada halaman form yang kamu buat pada tugas kali ini. Apakah terdapat elemen input Flutter lain yang tidak kamu gunakan pada tugas ini? Jelaskan!
+
+    - Elemen input yang digunakan adalah TextFormField untuk input nama produk, intensitas, dan perasaan.
+    - Tidak ada elemen input Flutter lain yang digunakan pada tugas ini.    
+
+4. Bagaimana cara kamu mengatur tema (theme) dalam aplikasi Flutter agar aplikasi yang dibuat konsisten? Apakah kamu mengimplementasikan tema pada aplikasi yang kamu buat?
+
+    - Mengatur tema dengan mengubah warna pada `main.dart`
+    - Mengimplementasikan tema pada aplikasi yang dibuat
+
+5. Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
+
+    Dalam aplikasi Vintazen, saya menerapkan beberapa teknik navigasi Flutter untuk mengelola perpindahan antar halaman:
+
+    -   Penggunaan Navigator.push dan Navigator.pop
+        Untuk berpindah ke halaman baru, saya menggunakan Navigator.push:
+
+
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HalamanBaru()),
+            );
+
+        Untuk kembali ke halaman sebelumnya, saya menggunakan Navigator.pop:
+
+            Navigator.pop(context);
+
+    -   Implementasi Drawer untuk Navigasi Menu:
+         
+        Saya menggunakan widget Drawer untuk membuat menu navigasi samping:
+
+            Drawer(
+                child: ListView(
+                    children: [
+                        DrawerHeader(   
+                            decoration: BoxDecoration(
+                                color: Colors.deepPurple,
+                        ),  
+                        child: Text('Menu Vintazen'),
+                    ),
+                    ListTile(
+                        title: Text('Halaman Utama'),
+                            onTap: () {
+                                Navigator.pushReplacement(
+                                context,    
+                                MaterialPageRoute(builder: (context) => MyHomePage()),
+                            );
+                        },
+                    ),
+                    // Item menu lainnya
+                    ],
+                ),
+            );
+
+    -   Penggunaan Named Routes
+        Untuk halaman-halaman utama, saya mendefinisikan named routes di main.dart:
+
+            MaterialApp(
+                initialRoute: '/',
+                routes: {
+                    '/': (context) => MyHomePage(),
+                    '/tambah': (context) => TambahProdukForm(),
+                    '/lihat': (context) => LihatProduk(),
+                },
+            );
+
+        Kemudian, saya bisa menggunakan Navigator.pushNamed untuk berpindah halaman:
+
+            Navigator.pushNamed(context, '/tambah');
+
+Dengan menerapkan teknik-teknik ini,saya dapat mengelola navigasi antar halaman dengan efektif dalam aplikasi Vintazen. Pendekatan ini memungkinkan pengguna untuk berpindah antar halaman dengan mudah dan memberikan pengalaman pengguna yang lancar.
+
