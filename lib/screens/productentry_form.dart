@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:vintazen/widgets/left_drawer.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart'; // Untuk context.watch
+import 'dart:convert'; // Untuk jsonEncode
+import 'package:vintazen/screens/menu.dart'; 
 
 class ProductEntryFormPage extends StatefulWidget {
   const ProductEntryFormPage({super.key});
@@ -10,11 +15,12 @@ class ProductEntryFormPage extends StatefulWidget {
 class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
   final _formKey = GlobalKey<FormState>();
   String _product = "";
-  String _feelings = "";
-  int _productIntensity = 0;
+  String _descriptions = "";
+  int _price = 0;
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -25,7 +31,9 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
         ),
         backgroundColor: const Color(0xFF363237),
         iconTheme: const IconThemeData(color: Colors.white),
+        foregroundColor: Colors.white,
       ),
+      drawer: const LeftDrawer(),
       backgroundColor: const Color(0xFF73605B),
       body: Form(
         key: _formKey,
@@ -60,20 +68,20 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Feelings",
-                    labelText: "Feelings",
+                    hintText: "Descriptions",
+                    labelText: "Descriptions",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
                   onChanged: (String? value) {
                     setState(() {
-                      _feelings = value!;
+                      _descriptions = value!;
                     });
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Feelings tidak boleh kosong!";
+                      return "Descriptions tidak boleh kosong!";
                     }
                     return null;
                   },
@@ -83,23 +91,23 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
                   decoration: InputDecoration(
-                    hintText: "Product intensity",
-                    labelText: "Product intensity",
+                    hintText: "Price",
+                    labelText: "Price",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
                   onChanged: (String? value) {
                     setState(() {
-                      _productIntensity = int.tryParse(value!) ?? 0;
+                      _price = int.tryParse(value!) ?? 0;
                     });
                   },
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
-                      return "Product intensity tidak boleh kosong!";
+                      return "Price tidak boleh kosong!";
                     }
                     if (int.tryParse(value) == null) {
-                      return "Product intensity harus berupa angka!";
+                      return "Price harus berupa angka!";
                     }
                     return null;
                   },
@@ -114,7 +122,37 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                       backgroundColor: MaterialStateProperty.all(
                           Theme.of(context).colorScheme.primary),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                                            if (_formKey.currentState!.validate()) {
+                        // Kirim ke Django dan tunggu respons
+                        final response = await request.postJson(
+                            "http://127.0.0.1:8000/create-flutter/",
+                            jsonEncode(<String, String>{
+                                'product': _product,
+                                'price': _price.toString(),
+                                'descriptions': _descriptions,
+                            
+                            }),
+                        );
+                        if (context.mounted) {
+                            if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                content: Text("Product baru berhasil disimpan!"),
+                                ));
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                                );
+                            } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                    content:
+                                        Text("Terdapat kesalahan, silakan coba lagi."),
+                                ));
+                            }
+                        }
+                      }
                       if (_formKey.currentState!.validate()) {
                         showDialog(
                           context: context,
@@ -126,8 +164,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Product: $_product'),
-                                    Text('Feelings: $_feelings'),
-                                    Text('Product Intensity: $_productIntensity'),
+                                    Text('Descriptions: $_descriptions'),
+                                    Text('Price: $_price'),
                                   ],
                                 ),
                               ),

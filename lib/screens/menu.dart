@@ -3,15 +3,16 @@ import 'package:vintazen/widgets/left_drawer.dart';
 import 'package:vintazen/widgets/product_card.dart';
 
 class MyHomePage extends StatelessWidget {
+  MyHomePage({super.key});
   final String npm = '2306275512' ; // NPM
   final String name = 'Yovan Raju'; // Nama
   final String className = 'PBP C'; // Kelas
-  MyHomePage({super.key});
+  
 
   final List<ItemHomepage> items = [
-    ItemHomepage("Lihat Product", Icons.shopping_cart, Color(0xFF2A3132)),
-    ItemHomepage("Tambah Product", Icons.add, Color(0xFF336B87)),
-    ItemHomepage("Logout", Icons.logout, Color(0xFF90AFC5)),
+    ItemHomepage("Lihat Product", Icons.shopping_cart),
+    ItemHomepage("Tambah Product", Icons.add),
+    ItemHomepage("Logout", Icons.logout),
   ];
 
   @override
